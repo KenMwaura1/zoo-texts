@@ -2,6 +2,7 @@
 
 Simple text application using Twitch API and Africas Talking Text Api to update when a streamer is online.
 
+Made using Flask framework and Africas Talking python sdk
 ## Installation 
 clone the repo
  
@@ -17,4 +18,8 @@ Create a virtual environment
 
 Install the requirements
 
-`pip install -r requirements.txt` 
+`pip install -r requirements.txt`
+
+Run the application 
+
+`python3 app.py`
