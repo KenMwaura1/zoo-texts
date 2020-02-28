@@ -17,4 +17,4 @@ main.db
 *.ntvs*
 *.njsproj
 *.sln
-__pycache__ 
+__pycache__
