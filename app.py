@@ -30,7 +30,7 @@ def main():
 
         print(sms_message)
 
-        phone_number1 = ['+254719702373']
+        phone_number1 = os.getenv("phone_number1")
         phone_number = [phone_number]
         print(phone_number)
 

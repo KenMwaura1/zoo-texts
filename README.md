@@ -6,11 +6,11 @@ Made using Flask framework and Africas Talking python sdk
 ## Installation 
 clone the repo
  
-`git clone`
+`git clone https://github.com/KenMwaura1/zoo-texts.git`
 
 Change into the directory
 
-`cd `
+`cd zoo-texts`
 
 Create a virtual environment
 
