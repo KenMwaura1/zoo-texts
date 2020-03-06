@@ -3,6 +3,7 @@ from flask import Flask, render_template, request
 import africastalking
 import pandas as pd
 import json
+import requests
 import pendulum
 from pandas.io.json import json_normalize
 from text_class import Text
@@ -18,8 +19,66 @@ CORS(app)
 prod_name = os.getenv("PROD_NAME")
 prod_apikey = os.getenv("PROD_APIKEY")
 # africastalking.initialize(username, apikey)
-africastalking.initialize(prod_name, prod_apikey)
+africastalking.initialize(str(prod_name), str(prod_apikey))
 sms = africastalking.SMS
+print(prod_apikey, prod_name)
+
+# This is one of the route where Twitch expose data,
+# They have many more: https://dev.twitch.tv/docs
+endpoint = "https://api.twitch.tv/helix/streams?"
+client_id = os.getenv("TWITCH_Client_ID")
+# print(client_id)
+
+# In order to authenticate we need to pass our api key through header
+headers = {"Client-ID": client_id}
+
+# In order to get a response we need to pass parameters
+params = {"game_id": "33214"}
+
+# It is now time to make the actual request
+response = requests.get(endpoint, params=params, headers=headers)
+# print(response.json())
+
+json_response = response.json()
+
+# We get only Streams
+streams = json_response.get('data', [])
+# print(streams)
+
+# Create a lambda function to get only live streams
+
+
+def is_live(stream): return stream.get('type') == 'live'
+
+
+streams_active = list(filter(is_live, streams))
+
+# Atleast one stream active
+atleast_one_stream_active = any(streams_active)
+print(atleast_one_stream_active)
+
+live_user = []
+
+
+def convert(streams_a):
+    live_ls = []
+    for stream in streams_a:
+        user_name = stream['user_name']
+        title = stream['title']
+        viewer_count = stream['viewer_count']
+        live_list = [user_name, viewer_count]
+        live_ls.append(live_list)
+    global live_user
+    for live in live_ls:
+        live_user.append(live)
+    print(live_user)
+    print('-' * 10, 'live users')
+    return live_ls
+
+
+print(convert(streams_active))
+print('--' * 20, 'global live users')
+print(live_user)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -76,6 +135,14 @@ def main():
                 session.close()
 
     return render_template('index.html')
+
+
+@app.route("/home", methods=["GET", "POST"])
+def home():
+    live = convert(streams_active)
+    print('-' * 10, 'home')
+    print(live)
+    return render_template("home.html")
 
 
 @app.route("/login")
